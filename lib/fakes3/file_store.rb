@@ -81,11 +81,12 @@ module FakeS3
       begin
         real_obj = S3Object.new
         obj_root = File.join(@root,bucket,object_name,FAKE_S3_METADATA_DIR)
+        puts obj_root
         metadata = File.open(File.join(obj_root, "metadata")) { |file| YAML::load(file) }
         real_obj.name = object_name
         real_obj.md5 = metadata[:md5]
         real_obj.content_type = metadata.fetch(:content_type) { "application/octet-stream" }
-        real_obj.content_encoding = metadata.fetch(:content_encoding) if metadata.fetch(:content_encoding)
+        real_obj.content_encoding = metadata.fetch(:content_encoding) rescue nil
         real_obj.io = RateLimitableFile.open(File.join(obj_root, "content"), 'rb')
         real_obj.size = metadata.fetch(:size) { 0 }
         real_obj.creation_date = File.ctime(obj_root).utc.iso8601(SUBSECOND_PRECISION)

@@ -329,7 +329,7 @@ module FakeS3
 
       response['Access-Control-Allow-Origin']   = '*'
       response['Access-Control-Allow-Methods']  = 'PUT, POST, HEAD, GET, OPTIONS'
-      response['Access-Control-Allow-Headers']  = 'Accept, Content-Type, Authorization, Content-Length, ETag, X-CSRF-Token'
+      response['Access-Control-Allow-Headers']  = 'access-control-allow-origin,  x-amz-acl, Accept, Content-Type, Authorization, Content-Length, ETag, X-CSRF-Token'
       response['Access-Control-Expose-Headers'] = 'ETag'
     end
 
@@ -460,8 +460,9 @@ module FakeS3
       s_req = Request.new
       s_req.path = webrick_req.path
       s_req.is_path_style = true
+      ipAddress = IPAddr.new(host) rescue nil
 
-      if !@root_hostnames.include?(host) && !(IPAddr.new(host) rescue nil)
+      if !@root_hostnames.include?(host) && !(ipAddress)
         s_req.bucket = host.split(".")[0]
         s_req.is_path_style = false
       end
